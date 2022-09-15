@@ -15,12 +15,25 @@ function addMessage(message){
   ul.appendChild(li);
 }
 
+function handleMessageSubmit(event){
+  event.preventDefault();
+  const input = room.querySelector("input");
+  const value = input.value; //
+  socket.emit("new_message", input.value, roomName, () => {
+    addMessage( `YOU: ${value}` );  // 요거 에런가???? QQQQQQQQQQ !!!
+  });
+  input.value = "";
+  
+}
+
 function showRoom() {
   welcome.hidden = true;
   room.hidden = false;
   const h3 = room.querySelector("h3");
-  h3.innerText = `Room ${roomName}`;
-} //뭐가 문젠지 몰겠는데 복붙하지 고쳐짐 ㅠ
+  h3.innerText = `Room ${roomName}`;//복붙해야 고쳐진 부분;;;
+  const form = room.querySelector("form");
+  form.addEventListener("submit", handleMessageSubmit);
+} 
 
 function handleRoomSubmit(event) {
   event.preventDefault();
@@ -31,7 +44,13 @@ function handleRoomSubmit(event) {
 }
 
 form.addEventListener("submit", handleRoomSubmit);
+
 socket.on("welcome", () => {
   addMessage("someone joined!");
 });
 
+socket.on("bye", () => {
+  addMessage("someone left ㅠㅠ!");
+});
+
+socket.on("new_message", addMessage);
